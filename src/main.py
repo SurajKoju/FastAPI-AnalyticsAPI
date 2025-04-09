@@ -1,9 +1,15 @@
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
-
 from api.events.routing import router as event_router
+from contextlib import asynccontextmanager
+from api.db.session import init_db
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    init_db()
+    yield
+
+app = FastAPI(lifespan=lifespan)
 app.include_router(event_router, prefix='/api/events')
 
 @app.get("/")
