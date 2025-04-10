@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from .models import (EventModel, EventCreateSchema, EventListSchema, EventUpdateSchema, EventDeleteSchema)
+from .models import (EventModel, EventCreateSchema, EventListSchema, EventUpdateSchema, EventDeleteSchema, get_utc_now)
 from api.db.session import get_session
 from sqlmodel import Session, select
 
@@ -57,6 +57,7 @@ def update_event(event_id:int, payload:EventUpdateSchema, session: Session = Dep
     for k, v in data.items():
         setattr(obj, k, v)
     
+    obj.updated_at = get_utc_now()
     session.add(obj) # 
     session.commit() # adding to the database
     
